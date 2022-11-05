@@ -32218,9 +32218,9 @@ function DeflateState() {
 
   /* Didn't use ct_data typedef below to suppress compiler warning */
 
-  // struct ct_data_s dyn_ltree[HEAP_SIZE];   /* literal and length tree */
-  // struct ct_data_s dyn_dtree[2*D_CODES+1]; /* distance tree */
-  // struct ct_data_s bl_tree[2*BL_CODES+1];  /* Huffman tree for bit lengths */
+
+
+
 
   // Use flat array of DOUBLE size, with interleaved fata,
   // because JS does not support effective
@@ -32239,7 +32239,7 @@ function DeflateState() {
   this.bl_count = new utils.Buf16(MAX_BITS + 1);
   /* number of codes at each bit length for an optimal tree */
 
-  //int heap[2*L_CODES+1];      /* heap used to build the Huffman trees */
+
   this.heap = new utils.Buf16(2 * L_CODES + 1);  /* heap used to build the Huffman trees */
   zero(this.heap);
 
@@ -32410,7 +32410,7 @@ function deflateInit2(strm, level, method, windowBits, memLevel, strategy) {
   s.prev = new utils.Buf16(s.w_size);
 
   // Don't need mem init magic for JS.
-  //s.high_water = 0;  /* nothing written to s->window yet */
+
 
   s.lit_bufsize = 1 << (memLevel + 6); /* 16K elements by default */
 
@@ -33188,7 +33188,7 @@ function bi_flush(s) {
  */
 function gen_bitlen(s, desc)
 //    deflate_state *s;
-//    tree_desc *desc;    /* the tree descriptor */
+
 {
   var tree            = desc.dyn_tree;
   var max_code        = desc.max_code;
@@ -33284,9 +33284,9 @@ function gen_bitlen(s, desc)
  *     zero code length.
  */
 function gen_codes(tree, max_code, bl_count)
-//    ct_data *tree;             /* the tree to decorate */
-//    int max_code;              /* largest code with non zero frequency */
-//    ushf *bl_count;            /* number of codes at each bit length */
+
+
+
 {
   var next_code = new Array(MAX_BITS + 1); /* next code value for each bit length */
   var code = 0;              /* running code value */
@@ -33460,9 +33460,9 @@ function bi_windup(s)
  */
 function copy_block(s, buf, len, header)
 //DeflateState *s;
-//charf    *buf;    /* the input data */
-//unsigned len;     /* its length */
-//int      header;  /* true if block header must be written */
+
+
+
 {
   bi_windup(s);        /* align on byte boundary */
 
@@ -33496,8 +33496,8 @@ function smaller(tree, n, m, depth) {
  */
 function pqdownheap(s, tree, k)
 //    deflate_state *s;
-//    ct_data *tree;  /* the tree to restore */
-//    int k;               /* node to move down */
+
+
 {
   var v = s.heap[k];
   var j = k << 1;  /* left son of k */
@@ -33529,8 +33529,8 @@ function pqdownheap(s, tree, k)
  */
 function compress_block(s, ltree, dtree)
 //    deflate_state *s;
-//    const ct_data *ltree; /* literal tree */
-//    const ct_data *dtree; /* distance tree */
+
+
 {
   var dist;           /* distance of matched string */
   var lc;             /* match length or unmatched char (if dist == 0) */
@@ -33589,7 +33589,7 @@ function compress_block(s, ltree, dtree)
  */
 function build_tree(s, desc)
 //    deflate_state *s;
-//    tree_desc *desc; /* the tree descriptor */
+
 {
   var tree     = desc.dyn_tree;
   var stree    = desc.stat_desc.static_tree;
@@ -33644,7 +33644,7 @@ function build_tree(s, desc)
    */
   node = elems;              /* next internal node of the tree */
   do {
-    //pqremove(s, tree, n);  /* n = node of least frequency */
+
     /*** pqremove ***/
     n = s.heap[1/*SMALLEST*/];
     s.heap[1/*SMALLEST*/] = s.heap[s.heap_len--];
@@ -33685,8 +33685,8 @@ function build_tree(s, desc)
  */
 function scan_tree(s, tree, max_code)
 //    deflate_state *s;
-//    ct_data *tree;   /* the tree to be scanned */
-//    int max_code;    /* and its largest code of non zero frequency */
+
+
 {
   var n;                     /* iterates over all tree elements */
   var prevlen = -1;          /* last emitted length */
@@ -33751,8 +33751,8 @@ function scan_tree(s, tree, max_code)
  */
 function send_tree(s, tree, max_code)
 //    deflate_state *s;
-//    ct_data *tree; /* the tree to be scanned */
-//    int max_code;       /* and its largest code of non zero frequency */
+
+
 {
   var n;                     /* iterates over all tree elements */
   var prevlen = -1;          /* last emitted length */
@@ -33858,7 +33858,7 @@ function build_bl_tree(s) {
  */
 function send_all_trees(s, lcodes, dcodes, blcodes)
 //    deflate_state *s;
-//    int lcodes, dcodes, blcodes; /* number of codes for each tree */
+
 {
   var rank;                    /* index in bl_order */
 
@@ -33959,9 +33959,9 @@ function _tr_init(s)
  */
 function _tr_stored_block(s, buf, stored_len, last)
 //DeflateState *s;
-//charf *buf;       /* input block */
-//ulg stored_len;   /* length of input block */
-//int last;         /* one if this is the last block for a file */
+
+
+
 {
   send_bits(s, (STORED_BLOCK << 1) + (last ? 1 : 0), 3);    /* send block type */
   copy_block(s, buf, stored_len, true); /* with header */
@@ -33985,9 +33985,9 @@ function _tr_align(s) {
  */
 function _tr_flush_block(s, buf, stored_len, last)
 //DeflateState *s;
-//charf *buf;       /* input block, or NULL if too old */
-//ulg stored_len;   /* length of input block */
-//int last;         /* one if this is the last block for a file */
+
+
+
 {
   var opt_lenb, static_lenb;  /* opt_len and static_len in bytes */
   var max_blindex = 0;        /* index of last bit length code of non zero freq */
@@ -34072,8 +34072,8 @@ function _tr_flush_block(s, buf, stored_len, last)
  */
 function _tr_tally(s, dist, lc)
 //    deflate_state *s;
-//    unsigned dist;  /* distance of matched string */
-//    unsigned lc;    /* match length-MIN_MATCH or unmatched char (if dist==0) */
+
+
 {
   //var out_length, in_length, dcode;
 
@@ -34102,20 +34102,20 @@ function _tr_tally(s, dist, lc)
 // don't enable it for binary compatibility
 
 //#ifdef TRUNCATE_BLOCK
-//  /* Try to guess if it is profitable to stop the current block here */
+
 //  if ((s.last_lit & 0x1fff) === 0 && s.level > 2) {
-//    /* Compute an upper bound for the compressed length */
+
 //    out_length = s.last_lit*8;
 //    in_length = s.strstart - s.block_start;
 //
 //    for (dcode = 0; dcode < D_CODES; dcode++) {
-//      out_length += s.dyn_dtree[dcode*2]/*.Freq*/ * (5 + extra_dbits[dcode]);
+
 //    }
 //    out_length >>>= 3;
 //    //Tracev((stderr,"\nlast_lit %u, in %ld, out ~%ld(%ld%%) ",
 //    //       s->last_lit, in_length, out_length,
 //    //       100L - out_length*100L/in_length));
-//    if (s.matches < (s.last_lit>>1)/*int /2*/ && out_length < (in_length>>1)/*int /2*/) {
+
 //      return true;
 //    }
 //  }
@@ -34349,7 +34349,7 @@ function InflateState() {
    because we don't have pointers in js, we use lencode and distcode directly
    as buffers so we don't need codes
   */
-  //this.codes = new utils.Buf32(ENOUGH);       /* space for code tables */
+
   this.lendyn = null;              /* dynamic table for length/literal codes (JS specific) */
   this.distdyn = null;             /* dynamic table for distance codes (JS specific) */
   this.sane = 0;                   /* if false, allow invalid distance too far */
@@ -34435,7 +34435,7 @@ function inflateInit2(strm, windowBits) {
   var state;
 
   if (!strm) { return Z_STREAM_ERROR; }
-  //strm.msg = Z_NULL;                 /* in case we return an error */
+
 
   state = new InflateState();
 
@@ -34573,7 +34573,7 @@ function inflate(strm, flush) {
   var from_source;
   var here = 0;               /* current decoding table entry */
   var here_bits, here_op, here_val; // paked "here" denormalized (JS specific)
-  //var last;                   /* parent table entry */
+
   var last_bits, last_op, last_val; // paked "last" denormalized (JS specific)
   var len;                    /* length to copy for repeats, bits to drop */
   var ret;                    /* return code */
@@ -35004,7 +35004,7 @@ function inflate(strm, flush) {
         //---//
         break;
       case STORED:
-        //--- BYTEBITS() ---// /* go to byte boundary */
+
         hold >>>= bits & 7;
         bits -= bits & 7;
         //---//
@@ -36151,7 +36151,7 @@ var dext = [ /* Distance codes 0..29 extra */
 module.exports = function inflate_table(type, lens, lens_index, codes, table, table_index, work, opts)
 {
   var bits = opts.bits;
-      //here = opts.here; /* table entry for duplication */
+
 
   var len = 0;               /* a code's length in bits */
   var sym = 0;               /* index of code symbols */
@@ -36169,10 +36169,10 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
   var next;             /* next available space in table */
   var base = null;     /* base value table to use */
   var base_index = 0;
-//  var shoextra;    /* extra bits table to use */
+
   var end;                    /* use base and extra for symbol > end */
-  var count = new utils.Buf16(MAXBITS + 1); //[MAXBITS+1];    /* number of codes of each length */
-  var offs = new utils.Buf16(MAXBITS + 1); //[MAXBITS+1];     /* offsets in table for each length */
+  var count = new utils.Buf16(MAXBITS + 1);
+  var offs = new utils.Buf16(MAXBITS + 1);
   var extra = null;
   var extra_index = 0;
 
@@ -36226,7 +36226,7 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
     root = max;
   }
   if (max === 0) {                     /* no symbols to code at all */
-    //table.op[opts.table_index] = 64;  //here.op = (var char)64;    /* invalid code marker */
+
     //table.bits[opts.table_index] = 1;   //here.bits = (var char)1;
     //table.val[opts.table_index++] = 0;   //here.val = (var short)0;
     table[table_index++] = (1 << 24) | (64 << 16) | 0;
@@ -36426,7 +36426,7 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
    at most one remaining entry, since if the code is incomplete, the
    maximum code length that was allowed to get this far is one bit) */
   if (huff !== 0) {
-    //table.op[next + huff] = 64;            /* invalid code marker */
+
     //table.bits[next + huff] = len - drop;
     //table.val[next + huff] = 0;
     table[next + huff] = ((len - drop) << 24) | (64 << 16) |0;
